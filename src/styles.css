@@ -141,3 +141,89 @@ body {
   margin-top: 5px;
   font-size: 14px;
 }
+/* MAIN PAGE WRAPPER */
+.dashboard-wrapper {
+  padding: 32px;
+  background: radial-gradient(circle at top, #101622, #0b0f16);
+  min-height: 100vh;
+  color: #e8edf3;
+}
+
+/* ------------------ HERO SECTION ------------------ */
+.hero-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 32px;
+  border-radius: 22px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+  border: 1px solid rgba(255,255,255,0.05);
+  backdrop-filter: blur(18px);
+  margin-bottom: 28px;
+}
+
+.hero-title {
+  font-size: 38px;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0;
+}
+
+.hero-subtitle {
+  color: #9ca3af;
+  margin-top: 8px;
+  font-size: 16px;
+}
+
+.hero-image img {
+  width: 260px;
+  height: auto;
+  opacity: 0.9;
+  filter: drop-shadow(0 12px 24px rgba(0,255,150,0.2));
+}
+
+/* ------------------ MAIN LAYOUT ------------------ */
+.main-layout {
+  display: grid;
+  grid-template-columns: 2.2fr 1fr;
+  gap: 28px;
+}
+
+/* ---------------- STOCK AREA ---------------- */
+.stock-area {
+  padding: 20px;
+  background: rgba(255,255,255,0.03);
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,0.04);
+}
+
+.section-title {
+  margin-bottom: 16px;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+/* ---------------- SIDE PANEL ---------------- */
+.side-panel {
+  padding: 20px;
+  background: rgba(255,255,255,0.03);
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,0.04);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.side-img {
+  width: 200px;
+  margin-top: 40px;
+  opacity: 0.9;
+  filter: drop-shadow(0 10px 20px rgba(0,255,150,0.15));
+}
+
+/* ---------------- HOVER EFFECTS ---------------- */
+.stock-card:hover {
+  transform: translateY(-3px);
+  transition: 0.2s ease;
+  background: rgba(255,255,255,0.07) !important;
+}

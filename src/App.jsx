@@ -5,6 +5,7 @@ import Prediction from "./pages/Prediction.jsx";
 import Navbar from "./components/Navbar.jsx";
 import LoginOverlay from "./components/LoginOverlay.jsx";
 
+
 export default function App() {
   const [loggedIn, setLoggedIn] = useState(false);
 

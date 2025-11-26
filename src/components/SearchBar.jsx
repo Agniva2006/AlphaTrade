@@ -1,106 +1,142 @@
-import React, { useEffect, useRef, useState } from "react";
-import { POPULAR_STOCKS, getLiveQuote } from "../data/demoPrices";
+// src/components/SearchBar.jsx
+import React, { useState, useEffect } from "react";
+import { POPULAR_STOCKS, getLiveSeries } from "../data/demoPrices.js";
 import { useNavigate } from "react-router-dom";
 
 export default function SearchBar() {
-  const navigate = useNavigate();
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
-  const [liveData, setLiveData] = useState({});
-  const boxRef = useRef(null);
+  const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
 
-  // Fetch live prices for all popular stocks
   useEffect(() => {
-    async function loadPrices() {
-      let updated = {};
-      for (let s of POPULAR_STOCKS) {
-        const q = await getLiveQuote(s.symbol);
-        updated[s.symbol] = q;
-      }
-      setLiveData(updated);
+    if (!query.trim()) {
+      setResults([]);
+      return;
     }
-    loadPrices();
-    const timer = setInterval(loadPrices, 30000);
-    return () => clearInterval(timer);
-  }, []);
 
-  // Filter stocks by search
-  useEffect(() => {
-    if (!query) {
-      setResults(POPULAR_STOCKS);
-    } else {
-      setResults(
-        POPULAR_STOCKS.filter((s) =>
-          s.symbol.toLowerCase().includes(query.toLowerCase())
-        )
-      );
-    }
+    const lower = query.toLowerCase();
+    const filtered = POPULAR_STOCKS.filter(
+      (s) =>
+        s.symbol.toLowerCase().includes(lower) ||
+        s.name.toLowerCase().includes(lower)
+    );
+
+    loadPrices(filtered);
+
+    // eslint-disable-next-line
   }, [query]);
 
-  // Click outside to close list
-  useEffect(() => {
-    const close = (e) => {
-      if (boxRef.current && !boxRef.current.contains(e.target)) {
-        setResults([]);
+  async function loadPrices(list) {
+    const out = [];
+    for (const s of list) {
+      const series = await getLiveSeries(s.symbol);
+      if (!series || series.length === 0) {
+        out.push({
+          symbol: s.symbol,
+          name: s.name,
+          price: null,
+          pct: null,
+        });
+        continue;
       }
-    };
-    document.addEventListener("mousedown", close);
-    return () => document.removeEventListener("mousedown", close);
-  }, []);
+      const last = series[series.length - 1];
+      const prev = series.length > 1 ? series[series.length - 2] : last;
 
-  // Navigate to prediction page
-  function goToStock(symbol) {
-    navigate(`/predict/${symbol}`);
+      const change = last.close - prev.close;
+      const pct = prev.close
+        ? ((change / prev.close) * 100).toFixed(2)
+        : 0;
+
+      out.push({
+        symbol: s.symbol,
+        name: s.name,
+        price: last.close,
+        pct,
+      });
+    }
+    setResults(out);
+  }
+
+  function go(sym) {
+    navigate(`/predict/${sym}`);
+    setQuery("");
+    setOpen(false);
   }
 
   return (
-    <div ref={boxRef} className="search-wrapper">
+    <div className="search-input" style={{ position: "relative" }}>
       <input
-        className="search-input"
-        placeholder="Search 25+ popular stocks…"
+        type="text"
+        placeholder="Search 25+ popular stocks..."
         value={query}
-        onChange={(e) => setQuery(e.target.value)}
+        onChange={(e) => {
+          setQuery(e.target.value);
+          setOpen(true);
+        }}
+        onFocus={() => setOpen(true)}
+        style={{
+          width: "100%",
+          padding: "10px 12px",
+          borderRadius: 10,
+          border: "1px solid rgba(255,255,255,0.06)",
+          background: "rgba(0,0,0,0.2)",
+          color: "#fff",
+        }}
       />
 
-      <div className="search-list">
-        {results.map((s) => {
-          const live = liveData[s.symbol];
-
-          return (
+      {open && results.length > 0 && (
+        <div
+          className="search-dropdown glass-panel"
+          style={{
+            position: "absolute",
+            width: "100%",
+            top: "45px",
+            zIndex: 20,
+            padding: 8,
+            borderRadius: 10,
+          }}
+        >
+          {results.map((s) => (
             <div
               key={s.symbol}
               className="search-item"
-              onClick={() => goToStock(s.symbol)}
+              onClick={() => go(s.symbol)}
+              style={{
+                padding: "10px 12px",
+                display: "flex",
+                justifyContent: "space-between",
+                cursor: "pointer",
+                borderRadius: 8,
+              }}
             >
-              <div className="left">
-                <div className="symbol">{s.symbol}</div>
-                <div className="name">{s.name}</div>
+              <div>
+                <div style={{ fontWeight: 700 }}>{s.symbol}</div>
+                <div style={{ color: "#9ca3af", fontSize: 12 }}>{s.name}</div>
               </div>
 
-              <div className="right">
-                <div className="price">
-                  ₹{live?.price ? live.price.toFixed(2) : "--"}
+              <div style={{ textAlign: "right" }}>
+                <div style={{ fontWeight: 700 }}>
+                  {s.price !== null ? `₹${s.price.toFixed(2)}` : "—"}
                 </div>
                 <div
-                  className="pct"
                   style={{
                     color:
-                      live?.percent_change > 0
-                        ? "#33ff99"
-                        : live?.percent_change < 0
-                        ? "#ff6666"
-                        : "#aaa",
+                      s.pct > 0
+                        ? "var(--accent)"
+                        : s.pct < 0
+                        ? "var(--danger)"
+                        : "#9ca3af",
+                    fontSize: 12,
                   }}
                 >
-                  {live?.percent_change
-                    ? `${live.percent_change.toFixed(2)}%`
-                    : "0.00%"}
+                  {s.pct !== null ? `${s.pct}%` : "—"}
                 </div>
               </div>
             </div>
-          );
-        })}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
