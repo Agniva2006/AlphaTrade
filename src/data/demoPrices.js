@@ -37,6 +37,7 @@ export const POPULAR_STOCKS = [
 // ====================================================
 //   INDICES (Stable Simulation)
 // ====================================================
+const API_BASE = "https://alphatrade.vercel.app";
 
 
 
@@ -46,7 +47,7 @@ export const POPULAR_STOCKS = [
 // ====================================================
 export async function getLiveSeries(symbol) {
   const sym = symbol.includes(".") ? symbol : `${symbol}.NS`;
-  const url = `/api/candles?symbol=${sym}`;
+  const url = `${API_BASE}/api/candles?symbol=${sym}`;
 
 
   try {
