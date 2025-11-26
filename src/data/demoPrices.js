@@ -38,7 +38,8 @@ export const POPULAR_STOCKS = [
 //   INDICES (Stable Simulation)
 // ====================================================
 
-const API_BASE = "https://alpha-trade-a9n3.vercel.app";
+export const API_BASE = "https://alphatrade.vercel.app";
+
 
 
 
