@@ -38,9 +38,7 @@ export const POPULAR_STOCKS = [
 //   INDICES (Stable Simulation)
 // ====================================================
 
-export const API_BASE = "https://alphatrade.vercel.app";
-
-
+export const API_BASE = "http://localhost:5000";
 
 
 
