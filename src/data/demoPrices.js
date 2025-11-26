@@ -46,7 +46,8 @@ export const POPULAR_STOCKS = [
 // ====================================================
 export async function getLiveSeries(symbol) {
   const sym = symbol.includes(".") ? symbol : `${symbol}.NS`;
-  const url = `http://localhost:5000/api/candles?symbol=${sym}`;
+  const url = `/api/candles?symbol=${sym}`;
+
 
   try {
     const res = await fetch(url);
